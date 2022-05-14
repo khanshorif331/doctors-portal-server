@@ -24,12 +24,32 @@ async function run() {
 		const serviceCollection = client
 			.db('doctors_portal')
 			.collection('services')
+		const bookingCollection = client
+			.db('doctors_portal')
+			.collection('bookings')
 
 		app.get('/service', async (req, res) => {
 			const query = {}
 			const cursor = serviceCollection.find(query)
 			const services = await cursor.toArray()
 			res.send(services)
+		})
+
+		/*****
+		 * API naming coonvention
+		 * app.get('/booking)  //get all boookings in this collection or get more than one or by filter
+		 * app.get('/booking/:id) //get a specific element by id
+		 * app.post('/booking)  // add a new booking data
+		 * app.patch('/booking/:id')  // update specific element
+		 * app.delete('/booking/:id')  // delete specific element
+		 *
+		 *
+		 * ****/
+
+		app.post('/booking', async (req, res) => {
+			const booking = req.body
+			const result = await bookingCollection.insertOne(booking)
+			res.send(result)
 		})
 	} finally {
 	}
