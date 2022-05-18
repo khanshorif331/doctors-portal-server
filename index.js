@@ -44,10 +44,11 @@ async function run() {
 			.db('doctors_portal')
 			.collection('bookings')
 		const userCollection = client.db('doctors_portal').collection('users')
+		const doctorCollection = client.db('doctors_portal').collection('doctors')
 
 		app.get('/service', async (req, res) => {
 			const query = {}
-			const cursor = serviceCollection.find(query)
+			const cursor = serviceCollection.find(query).project({ name: 1 })
 			const services = await cursor.toArray()
 			res.send(services)
 		})
@@ -133,17 +134,6 @@ async function run() {
 			res.send(services)
 		})
 
-		/*****
-		 * API naming coonvention
-		 * app.get('/booking)  //get all boookings in this collection or get more than one or by filter
-		 * app.get('/booking/:id) //get a specific element by id
-		 * app.post('/booking)  // add a new booking data
-		 * app.patch('/booking/:id')  // update specific element
-		 * app.delete('/booking/:id')  // delete specific element
-		 *
-		 *
-		 * ****/
-
 		app.get('/booking', verifyJWT, async (req, res) => {
 			const patient = req.query.patient
 			const authorization = req.headers.authorization
@@ -170,6 +160,12 @@ async function run() {
 			}
 			const result = await bookingCollection.insertOne(booking)
 			return res.send({ success: true, result })
+		})
+
+		app.post('/doctor', async (req, res) => {
+			const doctor = req.body
+			const result = await doctorCollection.insertOne(doctor)
+			res.send(result)
 		})
 	} finally {
 	}
